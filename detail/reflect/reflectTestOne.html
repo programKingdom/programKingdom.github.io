@@ -6,26 +6,27 @@
     <!-- meta -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" sizes="any" mask=""  href="./img/timg1.jpeg">
+
     <!-- css -->
-    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/bootstrap.min.css">
     <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-    <link rel="stylesheet" href="css/pace.css">
-    <link rel="stylesheet" href="css/custom.css">
+    <link rel="stylesheet" href="../../css/pace.css">
+    <link rel="stylesheet" href="../../css/custom.css">
+
     <!-- js -->
-    <script src="js/jquery-2.1.3.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/pace.min.js"></script>
-    <script src="js/modernizr.custom.js"></script>
+    <script src="../../js/jquery-2.1.3.min.js"></script>
+    <script src="../../js/bootstrap.min.js"></script>
+    <script src="../../js/pace.min.js"></script>
+    <script src="../../js/modernizr.custom.js"></script>
 </head>
 
-<body>
+<body id="single">
 <div class="container">
     <header id="site-header">
         <div class="row">
             <div class="col-md-4 col-sm-5 col-xs-8">
                 <div class="logo">
-                    <h1><a href="index.html">BE YOURSELF</a></h1>
+                    <h1><a href="index.html"> BE YOURSELF </a></h1>
                 </div>
             </div><!-- col-md-4 -->
             <div class="col-md-8 col-sm-7 col-xs-4">
@@ -38,16 +39,17 @@
 
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav navbar-right">
-                            <li class="cl-effect-11"><a href="index.html" data-hover="HOME">HOME</a></li>
-                            <li class="cl-effect-11"><a href="full-width.html" data-hover="BLOG">BLOG</a></li>
-                            <li class="cl-effect-11"><a href="about.html" data-hover="ABOUT">ABOUT</a></li>
+                            <li class="cl-effect-11"><a href="../../index.html" data-hover="首页">首页</a></li>
+                            <li class="cl-effect-11"><a href="../../full-width.html" data-hover="博客">博客</a></li>
+                            <li class="cl-effect-11"><a href="../../about.html" data-hover="关于">关于</a></li>
                         </ul>
-                    </div>
+                    </div><!-- /.navbar-collapse -->
                 </nav>
             </div><!-- col-md-8 -->
         </div>
     </header>
 </div>
+
 
 <div class="content-body">
     <div class="container">
@@ -55,33 +57,49 @@
             <main class="col-md-8">
                 <article class="post post-1">
                     <header class="entry-header">
+                        <h1 class="entry-title"> &nbsp; -- 反射 -- &nbsp; &nbsp; REFLECT TESTING - 1.0 </h1>
                         <div class="entry-meta">
-                            <span class="post-category"><a href="#">BE YOURSELF </a></span>
-                            <span ><a href="#"><time class="entry-date" datetime="2012-11-09T23:15:57+00:00">2020年01月09日</time></a></span>
+                            <span class="post-category"><a href="#">programKingdom</a></span>
+                            <span class="post-date"><a href="#"><time class="entry-date"
+                                                                      datetime="2012-11-09T23:15:57+00:00">2020-01-10</time></a></span>
                         </div>
                     </header>
                     <div class="entry-content clearfix">
-                        <p style="text-align: center">
-                            欢迎大家到此博客学习与交流，本博客以 GO语言为主题 其经验总结多为个人实际项目所得 欢迎技术大牛指点与批评。
-                            邮箱：programKingdom@163.com
-                        </p>
-                    </div>
-                </article>
-                <article class="post post-2">
-                    <div class="page-header">
-                        <h1><small>GOLANG</small></h1>
-                    </div>
-                    <div class="panel panel-default ">
-                        <div class="panel-heading">
-                            <!---       测试实例 TESTING --1.0        ------>
-                            <a href="./detail/reflect/reflectTestOne.html"><h3 class="panel-title">&nbsp; &nbsp; -- 反射 -- &nbsp; &nbsp; 话不多讲上实例！ TESTING - 1.0 </h3></a>
-
-                        </div>
                         <textarea name="" class="panel-body" id="" rows="20"  disabled="disabled" style="display: inline-block;width: 100% ; height: 100%;background-color: #f5f5f5;color: #212529">
-    Go语言提供了一种机制，在编译时不知道类型的情况下，可更新变量，在运行时查看值，调用方法以及直接对他们的布局进行操作,这种机制称之为反射！
+    package main
 
-    --- GO START
-  //TESTING 1.0
+    import (
+        "bytes"
+        "fmt"
+        "reflect"
+    )
+    func main(){
+        // --- 测试数据 START
+        var (
+            buf   bytes.Buffer
+            err	  error
+            Msg = struct{
+                    Name string
+                    Age  int
+                }{
+                    Name:"programKingdom",
+                    Age:23,
+                }
+        )
+        // --- END
+
+        //调用
+        if err = Encode(&buf,reflect.ValueOf(Msg)) ;err != nil { // reflect.ValueOf(Msg) ValueOf返回初始化为具体值的新值
+            fmt.Printf("编译出错 ： %v \ns",err)
+            return
+        }
+
+        //打印输出
+        fmt.Println(buf.String())
+            return
+    }
+
+    //TESTING 1.0
     func Encode(buf *bytes.Buffer,v reflect.Value)(error){
         //表示类型表示的特定类型。
         switch v.Kind() {
@@ -158,77 +176,16 @@
 
             return nil
     }
-    --- GO END
-</textarea>
+                        </textarea>
                     </div>
                 </article>
             </main>
-
-
-            <aside class="col-md-4">
-                <div class="widget widget-recent-posts">
-                    <h3 class="widget-title">最新文章</h3>
-                    <ul>
-                        <li>
-                            <a href="#">Django 博客开发入门教程：前言</a>
-                        </li>
-                        <li>
-                            <a href="#">Django 博客使用 Markdown 自动生成文章目录</a>
-                        </li>
-                        <li>
-                            <a href="#">部署 Django 博客</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="widget widget-category">
-                    <h3 class="widget-title">分类</h3>
-                    <ul>
-                        <li>
-                            <a href="#">Django 博客教程 <span class="post-count">(13)</span></a>
-                        </li>
-                        <li>
-                            <a href="#">Python 教程 <span class="post-count">(11)</span></a>
-                        </li>
-                        <li>
-                            <a href="#">Django 用户认证 <span class="post-count">(8)</span></a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="widget widget-tag-cloud">
-                    <h3 class="widget-title">标签云</h3>
-                    <ul>
-                        <li>
-                            <a href="#">GOLANG</a>
-                        </li>
-                        <li>
-                            <a href="#">LINUX</a>
-                        </li>
-                        <li>
-                            <a href="#">GIT</a>
-                        </li>
-                        <li>
-                            <a href="#">MYSQL</a>
-                        </li>
-                        <li>
-                            <a href="#">MONGODB</a>
-                        </li>
-                        <li>
-                            <a href="#">DOCKER</a>
-                        </li>
-                        <li>
-                            <a href="#">ELASTICSEARCH</a>
-                        </li>
-                        <li>
-                            <a href="#">KS8</a>
-                        </li>
-                    </ul>
-                </div>
-            </aside>
         </div>
     </div>
 </div>
+
+
+
 <footer id="site-footer">
     <div class="container">
         <div class="row">
@@ -251,6 +208,7 @@
         </ul>
     </nav>
 </div>
+
 
 <script src="js/script.js"></script>
 
