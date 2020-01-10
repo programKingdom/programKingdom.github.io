@@ -66,116 +66,125 @@
                     </header>
                     <div class="entry-content clearfix">
                         <textarea name="" class="panel-body" id="" rows="20"  disabled="disabled" style="display: inline-block;width: 100% ; height: 100%;background-color: #f5f5f5;color: #212529">
-    package main
+   package main
 
-    import (
-        "bytes"
-        "fmt"
-        "reflect"
-    )
-    func main(){
-        // --- 测试数据 START
-        var (
-            buf   bytes.Buffer
-            err	  error
-            Msg = struct{
-                    Name string
-                    Age  int
-                }{
-                    Name:"programKingdom",
-                    Age:23,
-                }
-        )
-        // --- END
+import (
+	"bytes"
+	"fmt"
+	"log"
+	"reflect"
+)
 
-        //调用
-        if err = Encode(&buf,reflect.ValueOf(Msg)) ;err != nil { // reflect.ValueOf(Msg) ValueOf返回初始化为具体值的新值
-            fmt.Printf("编译出错 ： %v \ns",err)
-            return
-        }
+func main(){
+	// --- 测试数据 START
+	var (
+		data  []byte
+		err	  error
+		Msg = struct{
+				Name string
+				Age  int
+			}{
+				Name:"programKingdom",
+				Age:23,
+			}
+	)
+	// --- END
 
-        //打印输出
-        fmt.Println(buf.String())
-            return
-    }
+	//调用
+	if data ,err = Marshal(Msg);err != nil {
+		log.Fatal(err)
+		return
+	}
+	//打印输出
+		fmt.Printf("%s \n",data)
+		return
+}
+//入口
+func Marshal(v interface{})([]byte,error){
+	var buf bytes.Buffer
+	if err := encode(&buf,reflect.ValueOf(v));err != nil{
+		return nil,err
+	}
+	return buf.Bytes(),nil
+}
 
-    //TESTING 1.0
-    func Encode(buf *bytes.Buffer,v reflect.Value)(error){
-        //表示类型表示的特定类型。
-        switch v.Kind() {
+//TESTING 1.0
+func encode(buf *bytes.Buffer,v reflect.Value)(error){
+	//表示类型表示的特定类型。
+	switch v.Kind() {
 
-            case reflect.Invalid:
-                buf.WriteString("nil")
+		case reflect.Invalid:
+		 	buf.WriteString("nil")
 
-            case reflect.Int,reflect.Int8,reflect.Int16,reflect.Int64,reflect.Int32:
-                fmt.Fprintf(buf,"%d",v.Int())
+		case reflect.Int,reflect.Int8,reflect.Int16,reflect.Int64,reflect.Int32:
+		 	fmt.Fprintf(buf,"%d",v.Int())
 
-            case reflect.Uint,reflect.Uint8,reflect.Uint16,reflect.Uint32,reflect.Uint64:
-                fmt.Fprintf(buf,"%d",v.Uint())
+		case reflect.Uint,reflect.Uint8,reflect.Uint16,reflect.Uint32,reflect.Uint64:
+			fmt.Fprintf(buf,"%d",v.Uint())
 
-            case reflect.String:
-                fmt.Fprintf(buf,"%q",v.String())
+		case reflect.String:
+			fmt.Fprintf(buf,"%q",v.String())
 
-            case reflect.Ptr:
-                //v.Elem() 返回接口v包含的值
-                return Encode(buf,v.Elem())
+		case reflect.Ptr:
+			//v.Elem() 返回接口v包含的值
+			return encode(buf,v.Elem())
 
-            case reflect.Array,reflect.Slice:
-                buf.WriteByte('(')
-                // v.NumField()  NumField返回结构v中的字段数。
-                for i:= 0 ;i < v.NumField();i++{
-                    if  i > 0 {
-                        //格式化
-                        buf.WriteByte(' ')
-                    }
-                    //递归调用检索字段类型
-                    if err := Encode(buf,v.Index(i));err != nil {
-                        return  err
-                    }
-                    buf.WriteByte(')')
-                }
+		case reflect.Array,reflect.Slice:
+			buf.WriteByte('(')
+			// v.NumField()  NumField返回结构v中的字段数。
+			for i:= 0 ;i < v.NumField();i++{
+				if  i > 0 {
+					//格式化
+					buf.WriteByte(' ')
+				}
+				//递归调用检索字段类型
+				if err := encode(buf,v.Index(i));err != nil {
+					return  err
+				}
+				buf.WriteByte(')')
+			}
 
-            case reflect.Struct:
-                buf.WriteByte('(')
-                for i:= 0;i < v.NumField();i++ {
-                    //获取结构体的字段名称 v.Type().Field(i).Name
-                    fmt.Fprintf(buf,"(%s ",v.Type().Field(i).Name)
-                    if err := Encode(buf,v.Field(i));err != nil {
-                        return  err
-                    }
-                        buf.WriteByte(')')
-                }
-                buf.WriteByte(')')
+		case reflect.Struct:
+			buf.WriteByte('(')
+			for i:= 0;i < v.NumField();i++ {
+				//获取结构体的字段名称 v.Type().Field(i).Name
+				fmt.Fprintf(buf,"(%s ",v.Type().Field(i).Name)
+				if err := encode(buf,v.Field(i));err != nil {
+					return  err
+				}
+					buf.WriteByte(')')
+			}
+			buf.WriteByte(')')
 
-            case reflect.Map:
-                buf.WriteByte('(')
-                // v.MapKeys() 返回一个包含映射中所有键的片段
-                for i, key := range v.MapKeys() {
-                    if i > 0  {
-                        buf.WriteByte(' ')
-                    }
-                    buf.WriteByte('(')
-                    //递归调用
-                    if err := Encode(buf,key);err != nil {
-                        return err
-                    }
-                    buf.WriteByte(' ')
-                    //递归调用
-                    // v.MapIndex() 返回与map v中的键关联的值。
-                    if err := Encode(buf,v.MapIndex(key));err != nil {
-                        return err
-                    }
-                    buf.WriteByte(')')
-                }
-                buf.WriteByte(')')
+		case reflect.Map:
+			buf.WriteByte('(')
+			// v.MapKeys() 返回一个包含映射中所有键的片段
+			for i, key := range v.MapKeys() {
+				if i > 0  {
+					buf.WriteByte(' ')
+				}
+				buf.WriteByte('(')
+				//递归调用
+				if err := encode(buf,key);err != nil {
+					return err
+				}
+				buf.WriteByte(' ')
+				//递归调用
+				// v.MapIndex() 返回与map v中的键关联的值。
+				if err := encode(buf,v.MapIndex(key));err != nil {
+					return err
+				}
+				buf.WriteByte(')')
+			}
+			buf.WriteByte(')')
 
-            default:
-                return fmt.Errorf("对不起 ， 暂时未对此类型 %s 作出 分解操作。",v.Type())
+		default:
+			return fmt.Errorf("对不起 ， 暂时未对此类型 %s 作出 分解操作。",v.Type())
 
-        }
+	}
 
-            return nil
-    }
+		return nil
+}
                         </textarea>
                     </div>
                 </article>
